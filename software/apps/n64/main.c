@@ -1,7 +1,7 @@
 /**
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright (c) 2023 Konrad Beckmann
+ * Copyright (c) 2026 Konrad Beckmann
  */
 
 // #pragma GCC optimize("Os")
