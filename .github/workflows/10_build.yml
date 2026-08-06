@@ -6,6 +6,8 @@ on:
       - n64-audio
       - n64-audio-osd
       - ci
+      - n64-osd2
+      - wip/n64-osd2
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
