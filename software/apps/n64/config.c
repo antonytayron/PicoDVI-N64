@@ -9,15 +9,25 @@
 
 config_t g_config;
 
+// Allow for compile-time configuration of default sample rate
+#ifndef CONFIG_DEFAULT_SAMPLE_RATE_HZ
+#define CONFIG_DEFAULT_SAMPLE_RATE_HZ SAMPLE_RATE_96000_HZ
+#endif
+
+// Allow for compile-time configuration of default color depth
+#ifndef CONFIG_DEFAULT_COLOR_DEPTH
+#define CONFIG_DEFAULT_COLOR_DEPTH DVI_RGB_555
+#endif
+
 static config_t default_config = {
     .magic1 = CONFIG_MAGIC1,
 
-    .audio_out_sample_rate = 96000,
+    .audio_out_sample_rate = CONFIG_DEFAULT_SAMPLE_RATE_HZ,
     .audio_volume_percent = 100,
     .audio_mute = false,
     .video_crop_x = DEFAULT_CROP_X_PAL,
     .video_crop_y = DEFAULT_CROP_Y_PAL,
-    .dvi_color_mode = DVI_RGB_555,
+    .dvi_color_mode = CONFIG_DEFAULT_COLOR_DEPTH,
 
     .magic2 = CONFIG_MAGIC2,
 };
