@@ -71,6 +71,7 @@ struct dvi_inst dvi0;
 
 audio_sample_t      last_audio_sample;
 audio_sample_t      audio_buffer[AUDIO_BUFFER_SIZE];
+int32_t g_audio_volume_scale = 256;
 
 static void core1_main(void)
 {
@@ -160,6 +161,35 @@ static void set_audio_sampling_parameters(uint32_t samplerate)
     dma_timer_set_fraction(0, numerator, denominator);
 }
 
+void osd_apply_audio_settings(void)
+{
+    if (g_config.audio_mute) {
+        g_audio_volume_scale = 0;
+    } else {
+        uint32_t volume = g_config.audio_volume_percent;
+        if (volume > 100) {
+            volume = 100;
+        }
+        g_audio_volume_scale = (int32_t)((volume * 256) / 100);
+    }
+
+    set_audio_sampling_parameters(g_config.audio_out_sample_rate);
+    set_audio_dvi_parameters(g_config.audio_out_sample_rate, false);
+}
+
+void osd_apply_video_settings(void)
+{
+}
+
+void osd_trigger_reset(void)
+{
+    gpio_init(OSD_RESET_PIN);
+    gpio_set_dir(OSD_RESET_PIN, GPIO_OUT);
+    gpio_put(OSD_RESET_PIN, 0);
+    sleep_ms(100);
+    gpio_put(OSD_RESET_PIN, 1);
+}
+
 int main(void)
 {
     config_init();
@@ -202,7 +232,7 @@ int main(void)
     dvi_get_blank_settings(&dvi0)->top    = 4 * 0;
     dvi_get_blank_settings(&dvi0)->bottom = 4 * 0;
 
-    set_audio_dvi_parameters(g_config.audio_out_sample_rate, true);
+    osd_apply_audio_settings();
 
     printf("Core 1 start\n");
     multicore_launch_core1(core1_main);
@@ -462,8 +492,8 @@ int main(void)
 
     uint32_t BGRS;
     uint32_t frame = 0;
-    uint32_t crop_x = DEFAULT_CROP_X_PAL;
-    uint32_t crop_y = DEFAULT_CROP_Y_PAL;
+    uint32_t crop_x = g_config.video_crop_x;
+    uint32_t crop_y = g_config.video_crop_y;
 #ifdef DIAGNOSTICS
     const volatile uint32_t *pGetTime = &timer_hw->timerawl;
     uint32_t t0 = 0;
@@ -475,6 +505,9 @@ int main(void)
 
     while (1) {
         // printf("START\n");
+
+        crop_x = g_config.video_crop_x;
+        crop_y = g_config.video_crop_y;
 
         // Let the OSD code run
         

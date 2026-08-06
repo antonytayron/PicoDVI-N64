@@ -22,4 +22,7 @@ typedef enum {
     OSD_AGAIN
 } osd_ret_t;
 
+void osd_apply_audio_settings(void);
+void osd_apply_video_settings(void);
+void osd_trigger_reset(void);
 osd_ret_t osd_run(void);

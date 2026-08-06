@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <stdbool.h>
 #include <stdint.h>
 
 // Default crop parameters
@@ -19,6 +20,10 @@
 
 #define OSD_Y_OFFSET (3)
 #define OSD_X_OFFSET (5)
+
+#define FIRMWARE_VERSION "0.2.0"
+#define FIRMWARE_GITHUB_URL "https://github.com/kbeckmann/PicoDVI-N64"
+#define OSD_RESET_PIN (22)
 
 // TMDS bit clock 252 MHz
 // DVDD 1.2V (1.1V seems ok too)
@@ -59,6 +64,10 @@ typedef struct config {
     uint32_t magic1;
 
     uint32_t audio_out_sample_rate;
+    uint32_t audio_volume_percent;
+    bool audio_mute;
+    uint32_t video_crop_x;
+    uint32_t video_crop_y;
     dvi_color_mode_t dvi_color_mode;
 
     uint32_t magic2;

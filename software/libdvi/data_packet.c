@@ -1,6 +1,8 @@
 #include "data_packet.h"
 #include <string.h>
 
+extern int32_t g_audio_volume_scale;
+
 // Compute 8 Parity Start
 // Parity table is build statically with the following code
 // for (int i = 0; i < 256; ++i){v_[i] = (i ^ (i >> 1) ^ (i >> 2) ^ (i >> 3) ^ (i >> 4) ^ (i >> 5) ^ (i >> 6) ^ (i >> 7)) & 1;}
@@ -216,8 +218,20 @@ int  __not_in_flash_func(set_audio_sample)(data_packet_t *data_packet, const aud
 
     for (int i = 0; i < n; ++i)
     {
-        const int16_t l = (*p).channels[0];
-        const int16_t r = (*p).channels[1];
+        int32_t scaled_l = ((int32_t)(*p).channels[0] * g_audio_volume_scale) >> 8;
+        int32_t scaled_r = ((int32_t)(*p).channels[1] * g_audio_volume_scale) >> 8;
+        if (scaled_l > 32767) {
+            scaled_l = 32767;
+        } else if (scaled_l < -32768) {
+            scaled_l = -32768;
+        }
+        if (scaled_r > 32767) {
+            scaled_r = 32767;
+        } else if (scaled_r < -32768) {
+            scaled_r = -32768;
+        }
+        const int16_t l = (int16_t)scaled_l;
+        const int16_t r = (int16_t)scaled_r;
         const uint8_t vuc = 1; // valid
         uint8_t *d = data_packet->subpacket[i];
         d[0] = 0;
