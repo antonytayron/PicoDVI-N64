@@ -27,7 +27,7 @@ jobs:
         mkdir -p "${{ github.workspace }}"
 
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         repository: ${{ github.event.pull_request.head.repo.full_name }}
         ref: ${{ github.head_ref }}
@@ -42,6 +42,7 @@ jobs:
         bash -c "\
           git config --global --add safe.directory /ci/picodvi                     && \
           mkdir /ci/artifacts                                                      && \
+          export CMAKE_CXX_FLAGS='-include cstdint'                                && \
           cd picodvi/software                                                      && \
                                                                                       \
           cmake -B build                                                              \
@@ -100,7 +101,7 @@ jobs:
           "
 
     - name: Upload picodvi binaries with a bundled test rom to artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: PicoDVI-N64
         path: |

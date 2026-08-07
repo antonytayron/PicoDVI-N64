@@ -45,6 +45,7 @@ jobs:
         bash -c "\
           git config --global --add safe.directory /ci/picodvi                     && \
           mkdir /ci/artifacts                                                      && \
+          export CMAKE_CXX_FLAGS='-include cstdint'                                && \
           cd picodvi/software                                                      && \
                                                                                       \
           cmake -B build                                                              \
