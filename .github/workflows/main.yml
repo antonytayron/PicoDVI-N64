@@ -45,6 +45,20 @@ jobs:
         bash -c "\
           git config --global --add safe.directory /ci/picodvi                     && \
           mkdir /ci/artifacts                                                      && \
+          python - <<'PY'                                                          && \
+          from pathlib import Path                                                 && \
+          for path_str in ['/opt/pico-sdk/tools/pioasm/pio_types.h',               && \
+                          '/opt/pico-sdk/tools/pioasm/output_format.h']:        && \
+              path = Path(path_str)                                               && \
+              text = path.read_text(encoding='utf-8')                              && \
+              if '#include <cstdint>' not in text:                                && \
+                  if path.name == 'output_format.h' and '*/' in text:            && \
+                      text = text.split('*/', 1)[1].lstrip('\n')                 && \
+                      text = '#include <cstdint>\n\n' + text                     && \
+                  else:                                                            && \
+                      text = '#include <cstdint>\n' + text                        && \
+                  path.write_text(text, encoding='utf-8')                          && \
+          PY                                                                       && \
           export CMAKE_CXX_FLAGS='-include cstdint'                                && \
           cd picodvi/software                                                      && \
                                                                                       \
